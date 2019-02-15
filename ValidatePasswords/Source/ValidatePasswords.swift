@@ -44,10 +44,10 @@ class ValidatePasswords: NSObject {
     
     // MARK: - Private functions
     
-    static func checkIfWordExistInDictionary(word: String,
-                                             callback:@escaping(Bool) -> Void) {
-        APIManager.requestToWS(urlBase: "https://api.datamuse.com",
-                               urlRequest: String(format: "/words?sp=%@", word),
+    private static func checkIfWordExistInDictionary(word: String,
+                                                     callback:@escaping(Bool) -> Void) {
+        APIManager.requestToWS(urlBase: Constants.urlBaseAPI,
+                               urlRequest: String(format: Constants.urlPathAPI, word),
                                requestType: .GETRequestType,
                                headers: [:],
                                parameters: nil) { (jsonArray, error) in

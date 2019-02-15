@@ -25,7 +25,7 @@ enum RequestType {
 class APIManager: NSObject {
     // MARK: - Properties
     
-    static let timeOutInterval = 20.0
+    static let timeOutInterval = 10.0
     
     // MARK: - Public functions
     
@@ -92,21 +92,14 @@ class APIManager: NSObject {
             
             let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
                 
-                guard let _: Data = data,
-                    let _: URLResponse = response, error == nil else {
-                        
-                        DispatchQueue.main.async {
-                            completion(nil, error)
-                        }
-                        
-                        return
+                guard let _: Data = data, let _: URLResponse = response, error == nil else {
+                    
+                    return completion(nil, error)
                 }
                 
                 if let e = error {
                     
-                    DispatchQueue.main.async {
-                        completion(nil, e)
-                    }
+                    completion(nil, e)
                 }
                 
                 
@@ -120,41 +113,29 @@ class APIManager: NSObject {
                             
                             if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String,Any>] {
                                 
-                                DispatchQueue.main.async {
-                                    completion(jsonArray, nil)
-                                }
+                                completion(jsonArray, nil)
                             } else {
                                 
-                                DispatchQueue.main.async {
-                                    completion(nil, error)
-                                }
+                                completion(nil, error)
                             }
                         } catch let error as NSError {
                             
-                            DispatchQueue.main.async {
-                                completion(nil, error)
-                            }
+                            completion(nil, error)
                         }
                     } else {
                         
-                        DispatchQueue.main.async {
-                            completion(nil, error)
-                        }
+                        completion(nil, error)
                     }
                 } else {
                     
-                    DispatchQueue.main.async {
-                        completion(nil, error)
-                    }
+                    completion(nil, error)
                 }
             }
             
             task.resume()
         } else {
             
-            DispatchQueue.main.async {
-                completion(nil, nil)
-            }
+            completion(nil, nil)
         }
     }
 }
