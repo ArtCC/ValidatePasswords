@@ -8,17 +8,16 @@
 
 import Foundation
 
+class Constants: NSObject {
+    static let urlBaseAPI: String = "https://api.datamuse.com"
+    static let urlPathAPI: String = "/words?sp=%@"
+}
+
 /// Request type
 ///
 /// - GETRequestType: GET
-/// - POSTRequestType: POST
-/// - DELETERequestType: DELETE
-/// - PUTRequestType: PUT
-enum RequestType {
+public enum RequestType {
     case GETRequestType
-    case POSTRequestType
-    case DELETERequestType
-    case PUTRequestType
 }
 
 /// APIManager class: for request to web service
@@ -31,7 +30,7 @@ class APIManager: NSObject {
     
     static func requestToWS(urlBase: String,
                             urlRequest: String,
-                            requestType: RequestType,
+                            requestType: RequestType = .GETRequestType,
                             headers: [String : String],
                             parameters: Data?,
                             completion:@escaping([Dictionary<String,Any>]?, Error?) -> Void) {
@@ -48,15 +47,6 @@ class APIManager: NSObject {
             case .GETRequestType:
                 
                 requestString = "GET"
-            case .POSTRequestType:
-                
-                requestString = "POST"
-            case .DELETERequestType:
-                
-                requestString = "DELETE"
-            case .PUTRequestType:
-                
-                requestString = "PUT"
             }
             
             let config = URLSessionConfiguration.default

@@ -10,24 +10,47 @@
 
 import Foundation
 
-enum Result {
-    case passwordOK
-    case passwordKO
+/// Options for password validate
+///
+/// - notInDictionary: word present in dictionary not authorized
+/// - levelPassword: strong, soft or weak password
+public enum Options {
+    case notInDictionary
+    case levelPassword
 }
 
-enum Options {
-    case dictionary
+/// Enum for password status level type
+///
+/// - strong: strong password
+/// - soft: soft password
+/// - weak: weak password
+/// - notInDictionary: dictionary not contain password
+public enum LevelPassword {
+    case strong
+    case soft
+    case weak
+    case notInDictionary
+}
+
+/// Result for password validate
+///
+/// - passwordOK: OK
+/// - passwordKO: KO
+public enum Result {
+    case passwordOK
+    case passwordKO
 }
 
 class ValidatePasswords: NSObject {
     // MARK: - Public functions
     
-    static func passwordIsValidate(password: String, options: Options,
+    static func passwordIsValidate(password: String,
+                                   options: Options,
                                    callback:@escaping(Result) -> Void) {
         
         switch options {
             
-        case .dictionary:
+        case .notInDictionary:
             
             ValidatePasswords.checkIfWordExistInDictionary(word: password) { (result) in
                 
@@ -39,16 +62,18 @@ class ValidatePasswords: NSObject {
                     callback(.passwordKO)
                 }
             }
+        case .levelPassword:
+            
+            callback(.passwordKO)
         }
     }
     
     // MARK: - Private functions
     
-    private static func checkIfWordExistInDictionary(word: String,
+    private class func checkIfWordExistInDictionary(word: String,
                                                      callback:@escaping(Bool) -> Void) {
         APIManager.requestToWS(urlBase: Constants.urlBaseAPI,
                                urlRequest: String(format: Constants.urlPathAPI, word),
-                               requestType: .GETRequestType,
                                headers: [:],
                                parameters: nil) { (jsonArray, error) in
                                 
@@ -69,6 +94,54 @@ class ValidatePasswords: NSObject {
                                         }
                                     }
                                 }
+        }
+    }
+    
+    /// Password validate
+    ///
+    /// - Parameter str: password in string
+    /// - Returns: value
+    private class func getLevelPasswordFullRegEx(_ str: String) -> LevelPassword {
+        var rules: Int = 0
+        var characterSet: CharacterSet!
+        
+        characterSet = CharacterSet(charactersIn: "QWEÉRTYUÚIÍOÓPAÁSDFGHJKLÑZXCVBNM")
+        
+        if str.rangeOfCharacter(from: characterSet) != nil {
+            
+            rules += 1
+        }
+        
+        characterSet = CharacterSet(charactersIn: "qweértyuúiíoópaásdfghjklñzxcvbnm")
+        
+        if str.rangeOfCharacter(from: characterSet) != nil {
+            
+            rules += 1
+        }
+        
+        characterSet = CharacterSet(charactersIn: "0987654321")
+        
+        if str.rangeOfCharacter(from: characterSet) != nil {
+            
+            rules += 1
+        }
+        
+        characterSet = CharacterSet(charactersIn: "QWEÉRTYUÚIÍOÓPAÁSDFGHJKLÑZXCVBNMqweértyuúiíoópaásdfghjklñzxcvbnm0987654321")
+        
+        if str.rangeOfCharacter(from: characterSet.inverted) != nil {
+            
+            rules += 1
+        }
+        
+        if (str.count >= 8 && rules == 4) {
+            
+            return LevelPassword.strong
+        } else if (str.count >= 8 && rules >= 3) {
+            
+            return LevelPassword.soft
+        } else {
+            
+            return LevelPassword.weak
         }
     }
 }

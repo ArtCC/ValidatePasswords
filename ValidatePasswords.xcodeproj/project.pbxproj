@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		94A792C42216FD170031963A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A792C32216FD170031963A /* Constants.swift */; };
 		94BE35512216DDA900A644BC /* ValidatePasswords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BE35502216DDA900A644BC /* ValidatePasswords.swift */; };
 		94BE35532216DDCB00A644BC /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BE35522216DDCB00A644BC /* APIManager.swift */; };
 		94C9737D2216DB6A00DAB5A9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C9737C2216DB6A00DAB5A9 /* AppDelegate.swift */; };
@@ -18,7 +17,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		94A792C32216FD170031963A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		94BE35502216DDA900A644BC /* ValidatePasswords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatePasswords.swift; sourceTree = "<group>"; };
 		94BE35522216DDCB00A644BC /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		94C973792216DB6A00DAB5A9 /* ValidatePasswords.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ValidatePasswords.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -46,7 +44,6 @@
 			children = (
 				94BE35502216DDA900A644BC /* ValidatePasswords.swift */,
 				94BE35522216DDCB00A644BC /* APIManager.swift */,
-				94A792C32216FD170031963A /* Constants.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -152,7 +149,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94A792C42216FD170031963A /* Constants.swift in Sources */,
 				94BE35532216DDCB00A644BC /* APIManager.swift in Sources */,
 				94BE35512216DDA900A644BC /* ValidatePasswords.swift in Sources */,
 				94C9737F2216DB6A00DAB5A9 /* ViewController.swift in Sources */,
