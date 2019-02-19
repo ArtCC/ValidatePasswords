@@ -12,63 +12,65 @@ import Foundation
 
 /// Options for password validate
 ///
-/// - notInDictionary: word present in dictionary not authorized
-/// - levelPassword: strong, soft or weak password
-public enum Options {
-    case notInDictionary
-    case levelPassword
+/// - notPresentInDictionary: word present in dictionary not authorized
+/// - checkStrengthPassword: strong, soft or weak password
+public enum Option {
+    case notPresentInDictionary
+    case checkStrengthPassword
 }
 
 /// Enum for password status level type
 ///
-/// - strong: strong password
-/// - soft: soft password
-/// - weak: weak password
-/// - notInDictionary: dictionary not contain password
-public enum LevelPassword {
+/// - strong: strong password: minimum characters, four rules
+/// - soft: soft password: minimum characters, three rules
+/// - weak: weak password: minimum characters
+/// - notPresentInDictionary: dictionary (English, German, Spanish, Italian) not contain password
+/// - presentInDictionary: dictionary (English, German, Spanish, Italian) contain password
+/// - errorPassword: password error
+public enum PasswordType {
     case strong
     case soft
     case weak
-    case notInDictionary
-}
-
-/// Result for password validate
-///
-/// - passwordOK: OK
-/// - passwordKO: KO
-public enum Result {
-    case passwordOK
-    case passwordKO
+    case notPresentInDictionary
+    case presentInDictionary
+    case errorPassword
 }
 
 class ValidatePasswords: NSObject {
     // MARK: - Public functions
     
+    /// Function for validate password
+    ///
+    /// - Parameters:
+    ///   - password: string password
+    ///   - option: dictionary or strength level
+    ///   - minimumCharacters: minimum characters for password
+    ///   - callback: return type or error
     static func passwordIsValidate(password: String,
-                                   options: Options,
-                                   minimumCharacters: Int = 8,
-                                   callback:@escaping(Result?, LevelPassword?) -> Void) {
+                                   option: Option,
+                                   minimumCharacters: Int,
+                                   callback:@escaping(PasswordType) -> Void) {
         
-        switch options {
+        switch option {
             
-        case .notInDictionary:
+        case .notPresentInDictionary:
             
             ValidatePasswords.checkIfWordExistInDictionary(password) { (result) in
                 
                 if result {
                     
-                    callback(.passwordOK, nil)
+                    callback(PasswordType.presentInDictionary)
                 } else {
                     
-                    callback(.passwordKO, nil)
+                    callback(PasswordType.notPresentInDictionary)
                 }
             }
-        case .levelPassword:
+        case .checkStrengthPassword:
             
             ValidatePasswords.getLevelPasswordFullRegEx(password,
-                                                        minimumCharacters) { (levelPassword) in
+                                                        minimumCharacters) { (passwordType) in
                                                             
-                                                            callback(nil, levelPassword)
+                                                            callback(passwordType)
             }
         }
     }
@@ -78,9 +80,7 @@ class ValidatePasswords: NSObject {
     private class func checkIfWordExistInDictionary(_ word: String,
                                                     callback:@escaping(Bool) -> Void) {
         APIManager.requestToWS(urlBase: Constants.urlBaseAPI,
-                               urlRequest: String(format: Constants.urlPathAPI, word),
-                               headers: [:],
-                               parameters: nil) { (jsonArray, error) in
+                               urlRequest: String(format: Constants.urlPathAPI, word)) { (jsonArray, error) in
                                 
                                 if let e = error {
                                     
@@ -94,7 +94,7 @@ class ValidatePasswords: NSObject {
                                         for option in ja {
                                             
                                             for (key, value) in option {
-                                             
+                                                
                                                 if key == "word" {
                                                     
                                                     guard let string: String = value as? String else {
@@ -122,7 +122,7 @@ class ValidatePasswords: NSObject {
     /// - Returns: value
     private class func getLevelPasswordFullRegEx(_ password: String,
                                                  _ minimumCharacters: Int,
-                                                 callback:@escaping(LevelPassword) -> Void) {
+                                                 callback:@escaping(PasswordType) -> Void) {
         var rules: Int = 0
         var characterSet: CharacterSet!
         
@@ -156,13 +156,102 @@ class ValidatePasswords: NSObject {
         
         if (password.count >= minimumCharacters && rules >= 4) {
             
-            callback(LevelPassword.strong)
+            callback(PasswordType.strong)
         } else if (password.count >= minimumCharacters && rules >= 3) {
             
-            callback(LevelPassword.soft)
+            callback(PasswordType.soft)
+        } else if (password.count >= minimumCharacters) {
+            
+            callback(PasswordType.weak)
         } else {
             
-            callback(LevelPassword.weak)
+            callback(PasswordType.errorPassword)
+        }
+    }
+}
+
+/// Constants properties
+class Constants: NSObject {
+    static let urlBaseAPI: String = "https://api.datamuse.com"
+    static let urlPathAPI: String = "/words?sp=%@"
+}
+
+/// APIManager class: for request to web service
+class APIManager: NSObject {
+    // MARK: - Public functions
+    
+    static func requestToWS(urlBase: String,
+                            urlRequest: String,
+                            completion:@escaping([Dictionary<String, Any>]?, Error?) -> Void) {
+        let timeOutInterval = 10.0
+        
+        var urlString: String = urlBase
+        urlString.append(urlRequest)
+        
+        if let urlWithCoding = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+            let url = URL(string: urlWithCoding) {
+            
+            let config = URLSessionConfiguration.default
+            config.timeoutIntervalForRequest = timeOutInterval
+            config.timeoutIntervalForResource = timeOutInterval
+            
+            var session: URLSession = URLSession()
+            
+            session = URLSession(
+                configuration: config,
+                delegate: nil,
+                delegateQueue: nil)
+            
+            let request = NSMutableURLRequest(url: url)
+            request.httpMethod = "GET"
+            request.cachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
+            request.timeoutInterval = timeOutInterval
+            
+            let task = session.dataTask(with: request as URLRequest) { (data, response, error) in
+                
+                guard let _: Data = data, let _: URLResponse = response, error == nil else {
+                    
+                    return completion(nil, error)
+                }
+                
+                if let e = error {
+                    
+                    return completion(nil, e)
+                }
+                
+                if let s = NSString(data: data!, encoding: String.Encoding.utf8.rawValue) {
+                    
+                    let string: String = s as String
+                    
+                    if let data = string.data(using: .utf8) {
+                        
+                        do {
+                            
+                            if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String, Any>] {
+                                
+                                completion(jsonArray, nil)
+                            } else {
+                                
+                                completion(nil, error)
+                            }
+                        } catch let error as NSError {
+                            
+                            completion(nil, error)
+                        }
+                    } else {
+                        
+                        completion(nil, error)
+                    }
+                } else {
+                    
+                    completion(nil, error)
+                }
+            }
+            
+            task.resume()
+        } else {
+            
+            completion(nil, nil)
         }
     }
 }

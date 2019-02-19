@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		94BE35512216DDA900A644BC /* ValidatePasswords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BE35502216DDA900A644BC /* ValidatePasswords.swift */; };
-		94BE35532216DDCB00A644BC /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BE35522216DDCB00A644BC /* APIManager.swift */; };
 		94C9737D2216DB6A00DAB5A9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C9737C2216DB6A00DAB5A9 /* AppDelegate.swift */; };
 		94C9737F2216DB6A00DAB5A9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94C9737E2216DB6A00DAB5A9 /* ViewController.swift */; };
 		94C973822216DB6A00DAB5A9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 94C973802216DB6A00DAB5A9 /* Main.storyboard */; };
@@ -18,7 +17,6 @@
 
 /* Begin PBXFileReference section */
 		94BE35502216DDA900A644BC /* ValidatePasswords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatePasswords.swift; sourceTree = "<group>"; };
-		94BE35522216DDCB00A644BC /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		94C973792216DB6A00DAB5A9 /* ValidatePasswords.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ValidatePasswords.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		94C9737C2216DB6A00DAB5A9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		94C9737E2216DB6A00DAB5A9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -43,7 +41,6 @@
 			isa = PBXGroup;
 			children = (
 				94BE35502216DDA900A644BC /* ValidatePasswords.swift */,
-				94BE35522216DDCB00A644BC /* APIManager.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -149,7 +146,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				94BE35532216DDCB00A644BC /* APIManager.swift in Sources */,
 				94BE35512216DDA900A644BC /* ValidatePasswords.swift in Sources */,
 				94C9737F2216DB6A00DAB5A9 /* ViewController.swift in Sources */,
 				94C9737D2216DB6A00DAB5A9 /* AppDelegate.swift in Sources */,

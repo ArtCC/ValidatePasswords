@@ -17,16 +17,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Functions
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Weak password
         ValidatePasswords.passwordIsValidate(password: "chicken",
-                                             options: .notInDictionary) { (result, _) in
+                                             option: .checkStrengthPassword,
+                                             minimumCharacters: 5) { (passwordType) in
                                                 
-                                                debugPrint("RESULT:notInDictionary: \(String(describing: result))")
+                                                debugPrint("Weak password: PASSWORD TYPE: \(passwordType)")
         }
         
-        ValidatePasswords.passwordIsValidate(password: "cow",
-                                             options: .levelPassword) { (_, levelPassword) in
+        // Soft password
+        ValidatePasswords.passwordIsValidate(password: "Chicken1",
+                                             option: .checkStrengthPassword,
+                                             minimumCharacters: 5) { (passwordType) in
                                                 
-                                                debugPrint("RESULT:LEVEL PASSWORD: \(String(describing: levelPassword))")
+                                                debugPrint("Soft password: PASSWORD TYPE: \(passwordType)")
+        }
+        
+        // Strong password
+        ValidatePasswords.passwordIsValidate(password: "Chicken%1",
+                                             option: .checkStrengthPassword,
+                                             minimumCharacters: 5) { (passwordType) in
+                                                
+                                                debugPrint("Strong password: PASSWORD TYPE: \(passwordType)")
+        }
+        
+        // Password error, dictionary contain this password
+        ValidatePasswords.passwordIsValidate(password: "chicken",
+                                             option: .notPresentInDictionary,
+                                             minimumCharacters: 5) { (passwordType) in
+                                                
+                                                debugPrint("Password error: PASSWORD TYPE: \(passwordType)")
+        }
+        
+        // Password ok, dictionary not contain this password
+        ValidatePasswords.passwordIsValidate(password: "chickenandcow",
+                                             option: .notPresentInDictionary,
+                                             minimumCharacters: 5) { (passwordType) in
+                                                
+                                                debugPrint("Password ok: PASSWORD TYPE: \(passwordType)")
         }
         
         return true
