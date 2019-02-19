@@ -46,32 +46,37 @@ class ValidatePasswords: NSObject {
     
     static func passwordIsValidate(password: String,
                                    options: Options,
-                                   callback:@escaping(Result) -> Void) {
+                                   minimumCharacters: Int = 8,
+                                   callback:@escaping(Result?, LevelPassword?) -> Void) {
         
         switch options {
             
         case .notInDictionary:
             
-            ValidatePasswords.checkIfWordExistInDictionary(word: password) { (result) in
+            ValidatePasswords.checkIfWordExistInDictionary(password) { (result) in
                 
                 if result {
                     
-                    callback(.passwordOK)
+                    callback(.passwordOK, nil)
                 } else {
                     
-                    callback(.passwordKO)
+                    callback(.passwordKO, nil)
                 }
             }
         case .levelPassword:
             
-            callback(.passwordKO)
+            ValidatePasswords.getLevelPasswordFullRegEx(password,
+                                                        minimumCharacters) { (levelPassword) in
+                                                            
+                                                            callback(nil, levelPassword)
+            }
         }
     }
     
     // MARK: - Private functions
     
-    private class func checkIfWordExistInDictionary(word: String,
-                                                     callback:@escaping(Bool) -> Void) {
+    private class func checkIfWordExistInDictionary(_ word: String,
+                                                    callback:@escaping(Bool) -> Void) {
         APIManager.requestToWS(urlBase: Constants.urlBaseAPI,
                                urlRequest: String(format: Constants.urlPathAPI, word),
                                headers: [:],
@@ -86,13 +91,27 @@ class ValidatePasswords: NSObject {
                                     
                                     if let ja = jsonArray {
                                         
-                                        debugPrint("JSON: \(ja)")
-                                        
                                         for option in ja {
                                             
-                                            debugPrint("Option: \(option)")
+                                            for (key, value) in option {
+                                             
+                                                if key == "word" {
+                                                    
+                                                    guard let string: String = value as? String else {
+                                                        
+                                                        return callback(false)
+                                                    }
+                                                    
+                                                    if word == string {
+                                                        
+                                                        return callback(true)
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
+                                    
+                                    callback(false)
                                 }
         }
     }
@@ -101,47 +120,49 @@ class ValidatePasswords: NSObject {
     ///
     /// - Parameter str: password in string
     /// - Returns: value
-    private class func getLevelPasswordFullRegEx(_ str: String) -> LevelPassword {
+    private class func getLevelPasswordFullRegEx(_ password: String,
+                                                 _ minimumCharacters: Int,
+                                                 callback:@escaping(LevelPassword) -> Void) {
         var rules: Int = 0
         var characterSet: CharacterSet!
         
         characterSet = CharacterSet(charactersIn: "QWEÉRTYUÚIÍOÓPAÁSDFGHJKLÑZXCVBNM")
         
-        if str.rangeOfCharacter(from: characterSet) != nil {
+        if password.rangeOfCharacter(from: characterSet) != nil {
             
             rules += 1
         }
         
         characterSet = CharacterSet(charactersIn: "qweértyuúiíoópaásdfghjklñzxcvbnm")
         
-        if str.rangeOfCharacter(from: characterSet) != nil {
+        if password.rangeOfCharacter(from: characterSet) != nil {
             
             rules += 1
         }
         
         characterSet = CharacterSet(charactersIn: "0987654321")
         
-        if str.rangeOfCharacter(from: characterSet) != nil {
+        if password.rangeOfCharacter(from: characterSet) != nil {
             
             rules += 1
         }
         
         characterSet = CharacterSet(charactersIn: "QWEÉRTYUÚIÍOÓPAÁSDFGHJKLÑZXCVBNMqweértyuúiíoópaásdfghjklñzxcvbnm0987654321")
         
-        if str.rangeOfCharacter(from: characterSet.inverted) != nil {
+        if password.rangeOfCharacter(from: characterSet.inverted) != nil {
             
             rules += 1
         }
         
-        if (str.count >= 8 && rules == 4) {
+        if (password.count >= minimumCharacters && rules >= 4) {
             
-            return LevelPassword.strong
-        } else if (str.count >= 8 && rules >= 3) {
+            callback(LevelPassword.strong)
+        } else if (password.count >= minimumCharacters && rules >= 3) {
             
-            return LevelPassword.soft
+            callback(LevelPassword.soft)
         } else {
             
-            return LevelPassword.weak
+            callback(LevelPassword.weak)
         }
     }
 }

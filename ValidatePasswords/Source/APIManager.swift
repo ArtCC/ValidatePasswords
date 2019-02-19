@@ -16,8 +16,8 @@ class Constants: NSObject {
 /// Request type
 ///
 /// - GETRequestType: GET
-public enum RequestType {
-    case GETRequestType
+public enum RequestType: String {
+    case GETRequestType = "GET"
 }
 
 /// APIManager class: for request to web service
@@ -33,21 +33,12 @@ class APIManager: NSObject {
                             requestType: RequestType = .GETRequestType,
                             headers: [String : String],
                             parameters: Data?,
-                            completion:@escaping([Dictionary<String,Any>]?, Error?) -> Void) {
+                            completion:@escaping([Dictionary<String, Any>]?, Error?) -> Void) {
         var urlString: String = urlBase
         urlString.append(urlRequest)
         
         if let urlWithCoding = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
             let url = URL(string: urlWithCoding) {
-            
-            var requestString = ""
-            
-            switch requestType {
-                
-            case .GETRequestType:
-                
-                requestString = "GET"
-            }
             
             let config = URLSessionConfiguration.default
             config.timeoutIntervalForRequest = APIManager.timeOutInterval
@@ -61,7 +52,7 @@ class APIManager: NSObject {
                 delegateQueue: nil)
             
             let request = NSMutableURLRequest(url: url)
-            request.httpMethod = requestString
+            request.httpMethod = requestType.rawValue
             request.cachePolicy = NSURLRequest.CachePolicy.useProtocolCachePolicy
             request.allHTTPHeaderFields = headers
             
@@ -101,7 +92,7 @@ class APIManager: NSObject {
                         
                         do {
                             
-                            if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String,Any>] {
+                            if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String, Any>] {
                                 
                                 completion(jsonArray, nil)
                             } else {

@@ -18,9 +18,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         ValidatePasswords.passwordIsValidate(password: "chicken",
-                                             options: .notInDictionary) { (result) in
+                                             options: .notInDictionary) { (result, _) in
                                                 
-                                                debugPrint("RESULT: \(result)")
+                                                debugPrint("RESULT:notInDictionary: \(String(describing: result))")
+        }
+        
+        ValidatePasswords.passwordIsValidate(password: "cow",
+                                             options: .levelPassword) { (_, levelPassword) in
+                                                
+                                                debugPrint("RESULT:LEVEL PASSWORD: \(String(describing: levelPassword))")
         }
         
         return true
