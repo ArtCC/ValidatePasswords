@@ -12,6 +12,7 @@ Add ValidatePasswords.swift class in your project.
 /// - notPresentInDictionary: word present in dictionary not authorized
 /// - checkStrengthPassword: strong, soft or weak password
 public enum Option {
+
     case notPresentInDictionary
     case checkStrengthPassword
 }
@@ -25,6 +26,7 @@ public enum Option {
 /// - presentInDictionary: dictionary (English, German, Spanish, Italian) contain password
 /// - errorPassword: password error
 public enum PasswordType {
+
     case strong
     case soft
     case weak
@@ -42,7 +44,6 @@ Level strength:
 ValidatePasswords.passwordIsValidate(password: "chicken",
                                              option: .checkStrengthPassword,
                                              minimumCharacters: 5) { (passwordType) in
-                                                
                                                 debugPrint("PASSWORD TYPE: \(passwordType)")
         }
 ```
@@ -53,7 +54,6 @@ Present or not in dictionary:
 ValidatePasswords.passwordIsValidate(password: "chickenandcow",
                                              option: .notPresentInDictionary,
                                              minimumCharacters: 5) { (passwordType) in
-                                                
                                                 debugPrint("Password ok: PASSWORD TYPE: \(passwordType)")
         }
 ```
